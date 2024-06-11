@@ -22,7 +22,7 @@ const PH = ({ visible, onClose }) => {
     mqttClient.connect({
       useSSL: true,
       userName:process.env.MQTT_USER,
-      password:process.env.MQTT_PASSWORD,
+      password:process.env.MQTT_PASS,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         setClient(mqttClient);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Image, Modal, View, Text, Button,StyleSheet } from 'react-native';
 import * as Paho from 'paho-mqtt';
-import{ER,MQTT_PASSWORD} from '@env';
+  
 const TDS = ({ visible, onClose }) => {
   const [TDSlevel, setTDSLevel] = useState('Loading...');
   const [client, setClient] = useState(null);
@@ -22,7 +22,7 @@ const TDS = ({ visible, onClose }) => {
     mqttClient.connect({
       useSSL: true,
       userName:process.env.MQTT_USER,
-      password:process.env.MQTT_PASSWORD,
+      password:process.env.MQTT_PASS,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         setClient(mqttClient);

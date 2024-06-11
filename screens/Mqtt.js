@@ -7,6 +7,7 @@ export default function App() {
   const [connectionStatus, setConnectionStatus] = useState('Connecting...');
   useEffect(() => {
     const client = new Paho.Client(process.env.MQTT_BROKER,8884,'esp32')
+    console.log("connected to:" + process.env.MQTT_BROKER)
     
      client.onConnectionLost = (responseObject) => {
       if (responseObject.errorCode !== 0) {
@@ -19,7 +20,7 @@ export default function App() {
     client.connect({
       useSSL: true, // Add useSSL option for secure connection
       userName: process.env.MQTT_USER,
-      password: process.env.MQTT_PASSWORD,
+      password: process.env.MQTT_PASS,
       onSuccess: () => {
         setConnectionStatus('Connected');
         client.subscribe('test', {

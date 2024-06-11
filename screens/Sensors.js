@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, Modal, Button } from 'react-native';
-import { getFirestore, collection, query, onSnapshot } from 'firebase/firestore';
-import { app } from '../firebaseConfig';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity,Image, Modal, Button, ScrollView, Pressable } from 'react-native';
 import * as Paho from 'paho-mqtt';
 import WaterLevel from './WaterLevel';
-import Temperature from './Temperature'; 
+import Temperature from './Temperature';
 import PH from './PH';
 import TDS from './TDS';
 import Turbidity from './Turbidity';
@@ -13,8 +11,7 @@ import Valve from './Valve';
 import Motor from './Motor';
 import AddTank from './AddTank';
 import Hub from './Hub';
-
-const firestore = getFirestore(app);
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const data = [
   { key: '1', title: 'Water Level', imageUri: 'https://senix.com/wp-content/uploads/liquid-level-sensing-150x150-2.jpg' },
@@ -47,8 +44,6 @@ const renderComponent = (title, tankId) => {
       return <Valve tankId={tankId} />;
     case 'Control Tank Motor':
       return <Motor tankId={tankId} />;
-    case 'Add Tank':
-      return <AddTank />;
     case 'Add WaterWard Hub':
       return <Hub />;
     default:
@@ -56,33 +51,20 @@ const renderComponent = (title, tankId) => {
   }
 };
 
-const Home = () => {
+const Sensors = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [tanks, setTanks] = useState([]);
-  const [selectedTank, setSelectedTank] = useState(null);
   const [client, setClient] = useState(null);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { tankId } = route.params;
 
   useEffect(() => {
-    const q = query(collection(firestore, 'tanks'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const tankData = [];
-      querySnapshot.forEach((doc) => {
-        tankData.push({ ...doc.data(), id: doc.id });
-      });
-      setTanks(tankData);
-      if (tankData.length > 0 && !selectedTank) {
-        setSelectedTank(tankData[0].id); // Select the first tank by default
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const mqttClient = new Paho.Client(process.env.MQTT_BROKER,8884, 'clientId');
+    const mqttClient = new Paho.Client(process.env.MQTT_BROKER, 8884, 'clientId');
     mqttClient.connect({
       onSuccess: () => {
         setClient(mqttClient);
+        console.log("Connected to : " + process.env.MQTT_BROKER);
       },
       onFailure: (err) => {
         console.error('Connection failed: ', err);
@@ -93,7 +75,7 @@ const Home = () => {
         client.disconnect();
       }
     };
-  }, []);
+  }, [client]);
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -105,15 +87,6 @@ const Home = () => {
     setSelectedItem(null);
   };
 
-  const handleTankSelection = (tankId) => {
-    setSelectedTank(tankId);
-    if (client && client.isConnected()) {
-      const message = new Paho.Message(tankId);
-      message.destinationName = 'config/tankId';
-      client.send(message);
-    }
-  };
-
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer} onPress={() => openModal(item)}>
       <Text>{item.title}</Text>
@@ -122,27 +95,19 @@ const Home = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.tankSelector}>
-        {tanks.map((tank) => (
-          <TouchableOpacity
-            key={tank.id}
-            style={[
-              styles.tankButton,
-              tank.id === selectedTank && styles.selectedTankButton
-            ]}
-            onPress={() => handleTankSelection(tank.id)}
-          >
-            <Text style={styles.tankButtonText}>{tank.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+
+    <TouchableOpacity style={ styles.itemContainer}  onPress={() => navigation.navigate('My Tanks')} >
+     <Text>Back To Tanks</Text>
+     </TouchableOpacity>
+
       <FlatList
         scrollEnabled={true}
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.key}
         numColumns={2}
+        contentContainerStyle={styles.gridContainer}
       />
       {selectedItem && (
         <Modal
@@ -155,38 +120,24 @@ const Home = () => {
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>{selectedItem.title}</Text>
               <Image resizeMode='contain' style={styles.modalImage} source={{ uri: selectedItem.imageUri }} />
-              {renderComponent(selectedItem.title, selectedTank)}
+              {renderComponent(selectedItem.title, tankId)}
               <Button title="Close" onPress={closeModal} />
             </View>
           </View>
         </Modal>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: 'white',
-    padding: 10,
   },
-  tankSelector: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    justifyContent: 'center',
-  },
-  tankButton: {
-    padding: 10,
-    backgroundColor: 'lightgrey',
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  selectedTankButton: {
-    backgroundColor: 'lightblue',
-  },
-  tankButtonText: {
-    fontWeight: 'bold',
+  gridContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 20,
   },
   itemContainer: {
     padding: 10,
@@ -234,4 +185,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Sensors;

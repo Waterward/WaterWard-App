@@ -6,6 +6,7 @@ import { FIREBASE_AUTH } from './firebaseConfig';
 const withUser = (WrappedComponent) => {
   return (props) => {
     const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
       console.log('Setting up onAuthStateChanged listener');
@@ -17,6 +18,9 @@ const withUser = (WrappedComponent) => {
           console.log('User is not logged in');
           setUser(null);
         }
+      }, (error) => {
+        console.error('Error with onAuthStateChanged:', error);
+        setError(error);
       });
 
       return () => {
@@ -25,18 +29,26 @@ const withUser = (WrappedComponent) => {
       };
     }, []);
 
-    const handleLogout = () => {
-      signOut(FIREBASE_AUTH)
-        .then(() => {
-          setUser(null);
-        })
-        .catch((error) => {
-          console.error('Error logging out:', error);
-        });
+    const handleLogout = async () => {
+      try {
+        await signOut(FIREBASE_AUTH);
+        setUser(null);
+      } catch (error) {
+        console.error('Error logging out:', error);
+        setError(error);
+      }
     };
 
+    if (error) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.errorText}>An error occurred: {error.message}</Text>
+        </View>
+      );
+    }
+
     if (!user) {
-      return <Text>Loading...</Text>;
+      return <Text>Loading...</Text>
     }
 
     return (
@@ -44,7 +56,7 @@ const withUser = (WrappedComponent) => {
         <Text style={styles.AppName}>WaterWard</Text>
         <View style={styles.header}>
           <Text style={styles.username}>Hello, {user.displayName || user.email}</Text>
-          <Button color={'lightblue'} title="Logout" onPress={handleLogout} />
+          <Button color={'deepskyblue'} title="Logout" onPress={handleLogout} />
         </View>
         <WrappedComponent {...props} user={user} />
       </View>
@@ -60,7 +72,7 @@ const styles = StyleSheet.create({
     padding: 10,
     fontWeight: 'bold',
     fontSize: 20,
-    color: 'lightblue',
+    color: 'deepskyblue',
     backgroundColor: 'white',
   },
   header: {
@@ -74,6 +86,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  errorText: {
+    color: 'red',
+    padding: 20,
+    fontSize: 16,
+  },
 });
 
 export default withUser;
+

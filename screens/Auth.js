@@ -29,7 +29,7 @@ const Auth = () => {
         setIsSignUp(false); // Switch to login after successful registration
       } else {
         await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-        navigation.navigate('Home'); // Navigate to Home screen upon successful login
+        navigation.navigate('My Tanks'); // Navigate to Home screen upon successful login
       }
     } catch (err) {
       setError(err.message);

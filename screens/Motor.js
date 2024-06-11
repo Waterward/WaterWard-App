@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import * as Paho from 'paho-mqtt';
-import{SER,MQTT_PASSWORD} from '@env';
+import{SER,MQTT_PASS} from '@env';
 
 const Motor = () => {
   const [client, setClient] = useState(null);
@@ -15,8 +15,8 @@ const Motor = () => {
 
     mqttClient.connect({
       useSSL: true,
-      userName: 'ayhamalali',
-      password: 'WaterWard2024!',
+      userName: process.env.MQTT_USER,
+      password: process.env.MQTT_PASS,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         setClient(mqttClient);

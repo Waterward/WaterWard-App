@@ -1,22 +1,37 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getFunctions } from 'firebase/functions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  API_KEY,
+  AUTH_DOMAIN,
+  PROJECT_ID,
+  STORAGE_BUCKET,
+  MESSAGING_SENDER_ID,
+  APP_ID,
+} from '@env';
 
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDhCT_SaV4AyT5WJHxDKHGNKdJzOksrT_s',
-  authDomain: 'waterward-ebce4.firebaseapp.com',
-  projectId: 'waterward-ebce4',
-  storageBucket: 'waterward-ebce4.appspot.com',
-  messagingSenderId: '1046474060215',
-  appId: '1:1046474060215:web:514de5c9fcebd942e13832',
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID,
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const FIREBASE_AUTH = getAuth(app);
-const  FIREBASE_FIRESTORE = getFirestore(app);
-const storage = getStorage(app);
-const functions = getFunctions(app);
 
-export { app,FIREBASE_FIRESTORE, FIREBASE_AUTH};
+// Initialize Firebase Authentication with persistence
+const FIREBASE_AUTH = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
+
+// Initialize Cloud Firestore and get a reference to the service
+const FIREBASE_FIRESTORE = getFirestore(app);
+
+export { app, FIREBASE_AUTH, FIREBASE_FIRESTORE };
+
+console.log("CHECK DB: " + FIREBASE_FIRESTORE.app);
