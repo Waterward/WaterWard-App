@@ -4,6 +4,7 @@ import { collection, query, onSnapshot, deleteDoc, doc, updateDoc, getDoc } from
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_FIRESTORE } from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import * as Clipboard from 'expo-clipboard';
 
 const tankImages = {
   'Rectangle': require('../assets/images/tank_003.jpg'),
@@ -63,6 +64,11 @@ const MyTanks = ({ user }) => {
     setEditTankData({ ...editTankData, type: selectedType });
   };
 
+  const handleCopyToClipboard = (tankId) => {
+    Clipboard.setString(tankId);
+    Alert.alert('Copied to clipboard', `Tank ID ${tankId} copied to clipboard.`);
+  };
+
   const renderTank = ({ item }) => (
     <View style={styles.card}>
       <TouchableOpacity 
@@ -78,6 +84,9 @@ const MyTanks = ({ user }) => {
           <Text>Diameter: {item.diameter}</Text>
           <Text>Length: {item.length}</Text>
           <Text>Full Depth: {item.fullDepth}</Text>
+          <TouchableOpacity onPress={() => handleCopyToClipboard(item.id)}>
+            <Text style={styles.copyText}>ID: {item.id} <Ionicons name="copy" size={16} color="black" /></Text>
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
       <View style={styles.iconContainer}>
@@ -311,6 +320,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 10,
     fontWeight: 'bold',
+  },
+  copyText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
 

@@ -83,7 +83,9 @@ export default function App() {
         ) : (
           <>
             <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="Sensors" component={SensorsWithUser} />
+            
+            <Stack.Screen name="Sensors" component={SensorsWithUser} options={{headerShown:false}}/>
+
             <Stack.Screen name="AddTank" component={AddTankWithUser} />
           </>
         )}

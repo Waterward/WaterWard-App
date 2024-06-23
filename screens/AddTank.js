@@ -21,9 +21,9 @@ const AddTank = ({ user }) => {
   const navigation = useNavigation();
 
   const handleAddTank = async () => {
-    const tankId = Math.floor(Math.random(10));
+    // const tankId = Math.floor(Math.random(10));
     const newTank = {
-      id: tankId,
+      // id: tankId,
       userId: user.uid,
       name,
       type,
@@ -87,7 +87,7 @@ const AddTank = ({ user }) => {
           <Text style={styles.label}>Height:</Text>
           <TextInput
             style={styles.input}
-            placeholder="Height"
+            placeholder="Height in cm "
             value={height}
             onChangeText={setHeight}
             keyboardType="numeric"
@@ -95,7 +95,7 @@ const AddTank = ({ user }) => {
           <Text style={styles.label}>Width:</Text>
           <TextInput
             style={styles.input}
-            placeholder="Width"
+            placeholder="Width in cm"
             value={width}
             onChangeText={setWidth}
             keyboardType="numeric"
@@ -103,35 +103,11 @@ const AddTank = ({ user }) => {
           <Text style={styles.label}>Length:</Text>
           <TextInput
             style={styles.input}
-            placeholder="Length"
+            placeholder="Length in cm "
             value={length}
             onChangeText={setLength}
             keyboardType="numeric"
           />
-        </>
-      )}
-
-      {(type === 'Vertical Cylinder' || type === 'Horizontal Cylinder') && (
-        <>
-          <Text style={styles.label}>Height:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Height"
-            value={height}
-            onChangeText={setHeight}
-            keyboardType="numeric"
-          />
-          <Text style={styles.label}>Diameter:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Diameter"
-            value={diameter}
-            onChangeText={setDiameter}
-            keyboardType="numeric"
-          />
-        </>
-      )}
-
       <Text style={styles.label}>Full Depth (Optional):</Text>
       <TextInput
         style={styles.input}
@@ -140,6 +116,67 @@ const AddTank = ({ user }) => {
         onChangeText={setFullDepth}
         keyboardType="numeric"
       />
+        </>
+
+      )}
+
+      {(type === 'Vertical Cylinder') && (
+        <>
+          <Text style={styles.label}>Height:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Height in cm"
+            value={height}
+            onChangeText={setHeight}
+            keyboardType="numeric"
+          />
+          <Text style={styles.label}>Diameter:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Diameter in cm "
+            value={diameter}
+            onChangeText={setDiameter}
+            keyboardType="numeric"
+          />
+      <Text style={styles.label}>Full Depth (Optional):</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Full Depth"
+        value={fullDepth}
+        onChangeText={setFullDepth}
+        keyboardType="numeric"
+      />
+        </>
+      )}
+
+       {(type === 'Horizontal Cylinder') && (
+        <>
+          <Text style={styles.label}>Length:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="length in cm"
+            value={length}
+            onChangeText={setLength}
+            keyboardType="numeric"
+          />
+          <Text style={styles.label}>Diameter:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Diameter in cm "
+            value={diameter}
+            onChangeText={setDiameter}
+            keyboardType="numeric"
+          />
+      <Text style={styles.label}>Full Depth (Optional):</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Full Depth"
+        value={fullDepth}
+        onChangeText={setFullDepth}
+        keyboardType="numeric"
+      />
+        </>
+      )}
 
       <AlertConfiguration initialAlerts={alerts} onAlertsChange={setAlerts} />
 
@@ -152,7 +189,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'white',
   },
   label: {
     fontSize: 16,

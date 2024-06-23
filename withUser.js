@@ -12,7 +12,7 @@ const withUser = (WrappedComponent) => {
       console.log('Setting up onAuthStateChanged listener');
       const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
         if (currentUser) {
-          console.log('User is logged in:', currentUser);
+          // console.log('User is logged in:', currentUser);
           setUser(currentUser);
         } else {
           console.log('User is not logged in');
