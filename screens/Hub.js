@@ -6,7 +6,7 @@ const Hub = ({ closeModal }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Auth Component</Text>
-      <Text>This is a placeholder for the Auth component.</Text>
+      <Text>This is a placeholder for LORA HUB component.</Text>
     </View>
   );
 };

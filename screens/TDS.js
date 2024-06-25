@@ -1,34 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import {Image, Modal, View, Text, Button,StyleSheet } from 'react-native';
+import { Image, View, Text, StyleSheet } from 'react-native';
 import * as Paho from 'paho-mqtt';
-  
-const TDS = ({ visible, onClose }) => {
+
+const TDS = ({ tankId }) => {
   const [TDSlevel, setTDSLevel] = useState('Loading...');
   const [client, setClient] = useState(null);
 
   useEffect(() => {
-    const mqttClient = new Paho.Client(process.env.MQTT_BROKER,8884,'ent-id');
+    const mqttClient = new Paho.Client(process.env.MQTT_BROKER, 8884, 'ent-id');
 
     mqttClient.onConnectionLost = (responseObject) => {
       console.error('Connection lost: ' + responseObject.errorMessage);
     };
 
     mqttClient.onMessageArrived = (message) => {
-      // Parse the message payload as needed (assuming it's a string)
       const receivedTDSLevel = message.payloadString;
       setTDSLevel(receivedTDSLevel);
     };
 
     mqttClient.connect({
       useSSL: true,
-      userName:process.env.MQTT_USER,
-      password:process.env.MQTT_PASS,
+      userName: process.env.MQTT_USER,
+      password: process.env.MQTT_PASS,
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         setClient(mqttClient);
-        mqttClient.subscribe('waterward/ayham/hub/conductivity', {
+        mqttClient.subscribe(`tanks/${tankId}/conductivity`, {
           onSuccess: () => {
-            console.log('Subscribed to water/conductivity topic');
+            console.log(`Subscribed to tanks/${tankId}/conductivity topic`);
           },
           onFailure: (error) => {
             console.error('Subscription failed: ', error.errorMessage);
@@ -45,8 +44,8 @@ const TDS = ({ visible, onClose }) => {
         client.disconnect();
       }
     };
-  }, []);
-  
+  }, [tankId]);
+
   const tdsRanges = [
     { range: '1 - 300', quality: 'Excellent' },
     { range: '300 - 600', quality: 'Good' },
@@ -56,9 +55,9 @@ const TDS = ({ visible, onClose }) => {
   ];
 
   return (
-      <View style={styles.container}>
-        <Text style={styles.text}>TDS: {TDSlevel}</Text>
-        
+    <View style={styles.container}>
+      <Text style={styles.text}>TDS: {TDSlevel}</Text>
+      
       <View style={styles.tableContainer}>
         <Text style={styles.tableHeader}>TDS Level Guide</Text>
         {tdsRanges.map((item, index) => (
@@ -68,27 +67,25 @@ const TDS = ({ visible, onClose }) => {
           </View>
         ))}
       </View>
-      
-      
-      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container:{
-    padding:40,
+  container: {
+    padding: 40,
   },
-  text:{
-    fontSize:20,
-    fontStyle:"italic",
-    fontWeight:"bold"
+  text: {
+    fontSize: 20,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
   },
-  image:{
-    width:50,
-    height:50,
-    resizeMode:'contain',
+  image: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
   },
-   tableContainer: {
+  tableContainer: {
     marginTop: 20,
     borderWidth: 1,
     borderColor: '#000',
@@ -117,7 +114,6 @@ const styles = StyleSheet.create({
   lastCell: {
     borderRightWidth: 0,
   },
+});
 
-
-})
 export default TDS;
