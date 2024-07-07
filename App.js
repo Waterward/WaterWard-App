@@ -12,6 +12,11 @@ import withUser from './withUser';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './firebaseConfig';
 import Auth from './screens/Auth';
+import AlertLog from './screens/AlertLog';
+import { LogBox } from 'react-native';
+
+// Ignore all log notifications
+LogBox.ignoreAllLogs();
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -21,6 +26,7 @@ const MqttWithUser = withUser(Mqtt);
 const DataWithUser = withUser(Data);
 const AddTankWithUser = withUser(AddTank);
 const MyTanksWithUser = withUser(MyTanks);
+const AlertLogWithUser = withUser(AlertLog);
 
 const MainTabs = () => (
   <Tab.Navigator
@@ -28,7 +34,7 @@ const MainTabs = () => (
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
-         if (route.name === 'MQTT') {
+        if (route.name === 'MQTT') {
           iconName = focused ? 'wifi' : 'wifi-outline';
         } else if (route.name === 'Analytics') {
           iconName = focused ? 'analytics' : 'analytics-outline';
@@ -36,6 +42,8 @@ const MainTabs = () => (
           iconName = focused ? 'add-circle' : 'add-circle-outline';
         } else if (route.name === 'My Tanks') {
           iconName = focused ? 'water' : 'water-outline';
+        } else if (route.name === 'Alert Log') {
+          iconName = focused ? 'alert' : 'alert-outline';
         }
 
         return <Ionicons name={iconName} size={size} color={color} />;
@@ -49,6 +57,7 @@ const MainTabs = () => (
     <Tab.Screen name="MQTT" component={MqttWithUser} />
     <Tab.Screen name="Analytics" component={DataWithUser} />
     <Tab.Screen name="Add Tank" component={AddTankWithUser} />
+    <Tab.Screen name="Alert Log" component={AlertLogWithUser} />
   </Tab.Navigator>
 );
 
@@ -83,10 +92,12 @@ export default function App() {
         ) : (
           <>
             <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            
-            <Stack.Screen name="Sensors" component={SensorsWithUser} options={{headerShown:false}}/>
+
+            <Stack.Screen name="Sensors" component={SensorsWithUser} options={{ headerShown: false }} />
 
             <Stack.Screen name="AddTank" component={AddTankWithUser} />
+
+            <Stack.Screen name='"Alert Log' component={AlertLog} options={{ headerShown: false }} />
           </>
         )}
       </Stack.Navigator>

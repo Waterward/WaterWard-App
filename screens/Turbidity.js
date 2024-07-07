@@ -3,7 +3,7 @@ import { Modal, View, Text, Button,StyleSheet } from 'react-native';
 import * as Paho from 'paho-mqtt';
  
 
-const Turbidity = ({ visible, onClose }) => {
+const Turbidity = ({tankId}) => {
   const [Turbiditylevel, setTurbidityLevel] = useState('Loading...');
   const [client, setClient] = useState(null);
 
@@ -13,7 +13,7 @@ const Turbidity = ({ visible, onClose }) => {
     mqttClient.onConnectionLost = (responseObject) => {
       console.error('Connection lost: ' + responseObject.errorMessage);
     };
-
+    
     mqttClient.onMessageArrived = (message) => {
       // Parse the message payload as needed (assuming it's a string)
       const receivedTurbidityLevel = message.payloadString;
@@ -22,14 +22,14 @@ const Turbidity = ({ visible, onClose }) => {
 
     mqttClient.connect({
       useSSL: true,
-      userName:process.env.MQTT_USER,
-      password:process.env.MQTT_PASS,
+      userName: process.env.MQTT_USER,
+      password: process.env.MQTT_PASS,
       onSuccess: () => {
-        console.log('Connected to MQTT broker');
+        console.log('Connected to MQTT broker'); 
         setClient(mqttClient);
-        mqttClient.subscribe('waterward/ayham/hub/turbidity', {
+        mqttClient.subscribe(`tanks/${tankId}/turbidity`, {
           onSuccess: () => {
-            console.log('Subscribed to water/turbidity topic');
+            console.log(`Subscribed to tanks/${tankId}/turbidity topic`);
           },
           onFailure: (error) => {
             console.error('Subscription failed: ', error.errorMessage);

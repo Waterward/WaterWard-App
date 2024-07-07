@@ -25,7 +25,7 @@ const TDS = ({ tankId }) => {
       onSuccess: () => {
         console.log('Connected to MQTT broker');
         setClient(mqttClient);
-        mqttClient.subscribe(`tanks/${tankId}/conductivity`, {
+        mqttClient.subscribe(`tanks/${tankId}/TDS`, {
           onSuccess: () => {
             console.log(`Subscribed to tanks/${tankId}/conductivity topic`);
           },
